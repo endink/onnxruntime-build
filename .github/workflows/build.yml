@@ -6,7 +6,7 @@ on:
       onnxruntime-version:
         description: "ONNX Runtime version"
         type: string
-        default: 1.7.3
+        default: 1.17.3
   push:
     tags:
       - v*.*.*
