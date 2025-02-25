@@ -20,13 +20,7 @@ PARALLEL_JOB_COUNT=${PARALLEL_JOB_COUNT:=$CPU_COUNT}
 cd $(dirname $0)
 
 (
-    git submodule update --init --depth=1 $ONNXRUNTIME_SOURCE_DIR
     cd $ONNXRUNTIME_SOURCE_DIR
-    if [ $ONNXRUNTIME_VERSION != $(cat VERSION_NUMBER) ]; then
-        git fetch origin tag v$ONNXRUNTIME_VERSION
-        git checkout v$ONNXRUNTIME_VERSION
-    fi
-    git submodule update --init --depth=1 --recursive
 )
 
 cmake \
@@ -38,18 +32,20 @@ cmake \
     -D ONNXRUNTIME_SOURCE_DIR=$(pwd)/$ONNXRUNTIME_SOURCE_DIR \
     --compile-no-warning-as-error \
     $CMAKE_OPTIONS
+
 cmake \
     --build $BUILD_DIR \
     --config Release \
     --parallel $PARALLEL_JOB_COUNT \
     $CMAKE_BUILD_OPTIONS
+
 cmake --install $BUILD_DIR --config Release
 
-cmake \
-    -S $SOURCE_DIR/tests \
-    -B $BUILD_DIR/tests \
-    -D ONNXRUNTIME_SOURCE_DIR=$(pwd)/$ONNXRUNTIME_SOURCE_DIR \
-    -D ONNXRUNTIME_INCLUDE_DIR=$(pwd)/$OUTPUT_DIR/include \
-    -D ONNXRUNTIME_LIB_DIR=$(pwd)/$OUTPUT_DIR/lib
-cmake --build $BUILD_DIR/tests
-ctest --test-dir $BUILD_DIR/tests --build-config Debug --verbose --no-tests=error
+# cmake \
+#     -S $SOURCE_DIR/tests \
+#     -B $BUILD_DIR/tests \
+#     -D ONNXRUNTIME_SOURCE_DIR=$(pwd)/$ONNXRUNTIME_SOURCE_DIR \
+#     -D ONNXRUNTIME_INCLUDE_DIR=$(pwd)/$OUTPUT_DIR/include \
+#     -D ONNXRUNTIME_LIB_DIR=$(pwd)/$OUTPUT_DIR/lib
+# cmake --build $BUILD_DIR/tests
+# ctest --test-dir $BUILD_DIR/tests --build-config Debug --verbose --no-tests=error

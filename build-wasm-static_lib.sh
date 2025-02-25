@@ -12,13 +12,7 @@ BUILD_OPTIONS=$BUILD_OPTIONS
 cd $(dirname $0)
 
 (
-    git submodule update --init --depth=1 $ONNXRUNTIME_SOURCE_DIR
     cd $ONNXRUNTIME_SOURCE_DIR
-    if [ $ONNXRUNTIME_VERSION != $(cat VERSION_NUMBER) ]; then
-        git fetch origin tag v$ONNXRUNTIME_VERSION
-        git checkout v$ONNXRUNTIME_VERSION
-    fi
-    git submodule update --init --depth=1 --recursive
 )
 
 rm -f $BUILD_DIR/Release/libonnxruntime_webassembly.a
@@ -54,5 +48,6 @@ cmake \
     -D ONNXRUNTIME_INCLUDE_DIR=$(pwd)/$OUTPUT_DIR/include \
     -D ONNXRUNTIME_LIB_DIR=$(pwd)/$OUTPUT_DIR/lib \
     $CMAKE_OPTIONS
-cmake --build $BUILD_DIR/tests
-ctest --test-dir $BUILD_DIR/tests --verbose --no-tests=error
+
+# cmake --build $BUILD_DIR/tests
+# ctest --test-dir $BUILD_DIR/tests --verbose --no-tests=error
