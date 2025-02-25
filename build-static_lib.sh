@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-
 SOURCE_DIR=${SOURCE_DIR:=static_lib}
 BUILD_DIR=${BUILD_DIR:=build/static_lib}
 OUTPUT_DIR=${OUTPUT_DIR:=output/static_lib}
@@ -10,6 +9,7 @@ ONNXRUNTIME_VERSION=${ONNXRUNTIME_VERSION:=$(cat ONNXRUNTIME_VERSION)}
 CMAKE_OPTIONS=$CMAKE_OPTIONS
 CMAKE_BUILD_OPTIONS=$CMAKE_BUILD_OPTIONS
 
+echo "CMAKE_OPTIONS: $CMAKE_OPTIONS"
 
 case $(uname -s) in
 Darwin) CPU_COUNT=$(sysctl -n hw.physicalcpu) ;;

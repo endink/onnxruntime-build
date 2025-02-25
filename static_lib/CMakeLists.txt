@@ -14,16 +14,16 @@ set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
 set(protobuf_MSVC_STATIC_RUNTIME OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
 
-if(NOT BUILD_SHARED_LIBS AND MSVC)
+if(NOT BUILD_SHARED_LIBS AND MSVC AND ONNX_USE_MSVC_STATIC_RUNTIME)
   # see https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
   # https://stackoverflow.com/questions/14172856/compile-with-mt-instead-of-md-using-cmake
   add_compile_options(
-            $<$<CONFIG:>:/MD> #---------|
-            $<$<CONFIG:Debug>:/MDd> #---|-- Statically link the runtime libraries
-            $<$<CONFIG:Release>:/MD> #--|
-            $<$<CONFIG:RelWithDebInfo>:/MD>
-            $<$<CONFIG:MinSizeRel>:/MD>
-        )
+          $<$<CONFIG:>:/MT> #---------|
+          $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
+          $<$<CONFIG:Release>:/MT> #--|
+          $<$<CONFIG:RelWithDebInfo>:/MT>
+          $<$<CONFIG:MinSizeRel>:/MT>
+      )
 endif()
 
 # Suppress C++23 deprecation warnings
