@@ -86,6 +86,14 @@ jobs:
           ref: v${{ env.ONNXRUNTIME_VERSION }}
           path: onnxruntime
 
+      - name: Setup MSBuild
+        if: runner.os == 'Windows'
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          sdk: 10.0.22621
+          toolset: 19.38.33141.0
+          arch: x64
+
       - name: Setup GCC
         if: runner.os == 'Linux'
         uses: egor-tensin/setup-gcc@v1
