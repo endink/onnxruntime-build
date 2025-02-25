@@ -10,6 +10,7 @@ ONNXRUNTIME_VERSION=${ONNXRUNTIME_VERSION:=$(cat ONNXRUNTIME_VERSION)}
 CMAKE_OPTIONS=$CMAKE_OPTIONS
 CMAKE_BUILD_OPTIONS=$CMAKE_BUILD_OPTIONS
 
+
 case $(uname -s) in
 Darwin) CPU_COUNT=$(sysctl -n hw.physicalcpu) ;;
 Linux) CPU_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq | awk '{print $4}') ;;

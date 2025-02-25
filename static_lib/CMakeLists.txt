@@ -10,11 +10,21 @@ file(WRITE ${C_HEADER_FILE} "${MODIFIED_C_HEADER_CONTENTS}")
 
 # Set MSVC runtime library
 set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
-set(ONNX_USE_MSVC_STATIC_RUNTIME ON)
-set(protobuf_MSVC_STATIC_RUNTIME ON)
-
-# Set ONNX Runtime options
+set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
+set(protobuf_MSVC_STATIC_RUNTIME OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
+
+if(NOT BUILD_SHARED_LIBS AND MSVC)
+  # see https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
+  # https://stackoverflow.com/questions/14172856/compile-with-mt-instead-of-md-using-cmake
+  add_compile_options(
+            $<$<CONFIG:>:/MD> #---------|
+            $<$<CONFIG:Debug>:/MDd> #---|-- Statically link the runtime libraries
+            $<$<CONFIG:Release>:/MD> #--|
+            $<$<CONFIG:RelWithDebInfo>:/MD>
+            $<$<CONFIG:MinSizeRel>:/MD>
+        )
+endif()
 
 # Suppress C++23 deprecation warnings
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
