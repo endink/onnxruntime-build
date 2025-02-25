@@ -90,8 +90,8 @@ jobs:
         if: runner.os == 'Windows'
         uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
-          sdk: 10.0.22621
-          toolset: 19.38.33141.0
+          sdk: 10.0.22621.0
+          toolset: 14.38.33130
           arch: x64
 
       - name: Setup GCC
