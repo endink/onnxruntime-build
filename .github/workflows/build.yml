@@ -62,10 +62,10 @@ jobs:
           #   build: ./build-static_lib.sh
           #   post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
-          - target: win-x64-static_lib
+          - target: win-x64-static-md_lib
             runs-on: windows-2022
             build: >
-              CMAKE_OPTIONS="-D CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+              CMAKE_OPTIONS="-DONNX_USE_MSVC_STATIC_RUNTIME=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -Dgtest_force_shared_crt=OFF -A x64 -Donnxruntime_BUILD_UNIT_TESTS=OFF"
               ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
