@@ -62,10 +62,17 @@ jobs:
           #   build: ./build-static_lib.sh
           #   post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
-          - target: win-x64-static-md_lib
+          - target: win-x64-static-md
             runs-on: windows-2019
             build: >
-              CMAKE_OPTIONS='-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>DLL -DONNX_USE_MSVC_STATIC_RUNTIME=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -Dgtest_force_shared_crt=ON -A x64 -Donnxruntime_BUILD_UNIT_TESTS=OFF '
+              CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=OFF '
+              ./build-static_lib.sh
+            post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
+
+          - target: win-x64-static-mt
+            runs-on: windows-2019
+            build: >
+              CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=ON '
               ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 

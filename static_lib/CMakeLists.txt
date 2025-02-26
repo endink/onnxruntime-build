@@ -8,11 +8,46 @@ file(READ ${C_HEADER_FILE} C_HEADER_CONTENTS)
 string(REPLACE "__attribute__((visibility(\"default\")))" "__attribute__((visibility(\"hidden\")))" MODIFIED_C_HEADER_CONTENTS "${C_HEADER_CONTENTS}")
 file(WRITE ${C_HEADER_FILE} "${MODIFIED_C_HEADER_CONTENTS}")
 
-# Set MSVC runtime library
-set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
-set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
-set(protobuf_MSVC_STATIC_RUNTIME OFF)
+option(USE_MSVC_STATIC_RUNTIME "Use static crt or not" OFF)
+option(USE_DML "Use DirectML" OFF)
+
+message(STATUS "USE_MSVC_STATIC_RUNTIME: ${USE_MSVC_STATIC_RUNTIME}")
+set(onnxruntime_BUILD_UNIT_TESTS OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
+
+if(USE_DML)
+    set(onnxruntime_USE_CUSTOM_DIRECTML ON)
+    set(dml_LIB_DIR ${DML_DIR}/bin/x64-win)
+    set(dml_INCLUDE_DIR ${DML_DIR}/include)
+    message(STATUS "onnxruntime_USE_CUSTOM_DIRECTML: ${onnxruntime_USE_CUSTOM_DIRECTML}")
+    message(STATUS "dml_LIB_DIR: ${dml_LIB_DIR}")
+    message(STATUS "dml_INCLUDE_DIR: ${dml_INCLUDE_DIR}")
+endif()
+
+if(MSVC)
+    if(USE_MSVC_STATIC_RUNTIME)
+        # Set MSVC runtime library
+        set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
+        set(ONNX_USE_MSVC_STATIC_RUNTIME ON)
+        set(protobuf_MSVC_STATIC_RUNTIME ON)
+        set(ABSL_MSVC_STATIC_RUNTIME ON)
+        set(gtest_force_shared_crt OFF)
+
+        add_compile_options(
+          $<$<CONFIG:>:/MT> #---------|
+          $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
+          $<$<CONFIG:Release>:/MT> #--|
+          $<$<CONFIG:RelWithDebInfo>:/MT>
+          $<$<CONFIG:MinSizeRel>:/MT>
+      )
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+        set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
+        set(protobuf_MSVC_STATIC_RUNTIME OFF)
+        set(ABSL_MSVC_STATIC_RUNTIME OFF)
+        set(gtest_force_shared_crt ON)
+    endif()
+endif()
 
 if(NOT BUILD_SHARED_LIBS AND MSVC AND ONNX_USE_MSVC_STATIC_RUNTIME)
   # see https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
