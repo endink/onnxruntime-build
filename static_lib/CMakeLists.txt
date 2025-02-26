@@ -39,7 +39,7 @@ if(MSVC)
           $<$<CONFIG:Release>:/MT> #--|
           $<$<CONFIG:RelWithDebInfo>:/MT>
           $<$<CONFIG:MinSizeRel>:/MT>
-      )
+        )
     else()
     message("------------------ Use Dynamic MSVC CRT ------------------")
         set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
@@ -47,6 +47,14 @@ if(MSVC)
         set(protobuf_MSVC_STATIC_RUNTIME OFF)
         set(ABSL_MSVC_STATIC_RUNTIME OFF)
         set(gtest_force_shared_crt ON)
+
+        add_compile_options(
+          $<$<CONFIG:>:/MD> #---------|
+          $<$<CONFIG:Debug>:/MDd> #---|-- Statically link the runtime libraries
+          $<$<CONFIG:Release>:/MD> #--|
+          $<$<CONFIG:RelWithDebInfo>:/MD>
+          $<$<CONFIG:MinSizeRel>:/MD>
+        )
     endif()
 endif()
 
