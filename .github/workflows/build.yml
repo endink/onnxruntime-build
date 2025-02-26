@@ -81,6 +81,21 @@ jobs:
           #   post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
     steps:
+      - name: Set ONNX Runtime version
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "ONNXRUNTIME_VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+          else
+            echo "ONNXRUNTIME_VERSION=${{ inputs.onnxruntime-version }}" >> $GITHUB_ENV
+          fi
+          echo "Use OnnxRuntime: ${{ env.ONNXRUNTIME_VERSION }}"
+      
+      - name: Set environment variables
+        run: |
+          echo OUTPUT_DIR=./output >> $GITHUB_ENV
+          echo ARCHIVE_DIR="${{ runner.temp }}" >> $GITHUB_ENV
+          echo ARCHIVE_NAME=onnxruntime-${{ matrix.target }}-${{ env.ONNXRUNTIME_VERSION }} >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -145,21 +160,6 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
-
-      - name: Set ONNX Runtime version
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            echo "ONNXRUNTIME_VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-          else
-            echo "ONNXRUNTIME_VERSION=${{ inputs.onnxruntime-version }}" >> $GITHUB_ENV
-          fi
-          echo "Use OnnxRuntime: ${{ env.ONNXRUNTIME_VERSION }}"
-
-      - name: Set environment variables
-        run: |
-          echo OUTPUT_DIR=./output >> $GITHUB_ENV
-          echo ARCHIVE_DIR="${{ runner.temp }}" >> $GITHUB_ENV
-          echo ARCHIVE_NAME=onnxruntime-${{ matrix.target }}-${{ env.ONNXRUNTIME_VERSION }} >> $GITHUB_ENV
 
       - name: Build
         run: ${{ matrix.build }}
