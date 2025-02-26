@@ -11,7 +11,6 @@ file(WRITE ${C_HEADER_FILE} "${MODIFIED_C_HEADER_CONTENTS}")
 option(USE_MSVC_STATIC_RUNTIME "Use static crt or not" OFF)
 option(USE_DML "Use DirectML" OFF)
 
-message(STATUS "USE_MSVC_STATIC_RUNTIME: ${USE_MSVC_STATIC_RUNTIME}")
 set(onnxruntime_BUILD_UNIT_TESTS OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
 
@@ -26,6 +25,7 @@ endif()
 
 if(MSVC)
     if(USE_MSVC_STATIC_RUNTIME)
+        message(STATUS "Use Static MSVC CRT")
         # Set MSVC runtime library
         set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
         set(ONNX_USE_MSVC_STATIC_RUNTIME ON)
@@ -41,6 +41,7 @@ if(MSVC)
           $<$<CONFIG:MinSizeRel>:/MT>
       )
     else()
+        message(STATUS "Use Dynamic MSVC CRT")
         set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
         set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
         set(protobuf_MSVC_STATIC_RUNTIME OFF)
