@@ -25,7 +25,7 @@ endif()
 
 if(MSVC)
     if(USE_MSVC_STATIC_RUNTIME)
-        message(STATUS "Use Static MSVC CRT")
+        message("------------------ Use Static MSVC CRT ------------------")
         # Set MSVC runtime library
         set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
         set(ONNX_USE_MSVC_STATIC_RUNTIME ON)
@@ -41,7 +41,7 @@ if(MSVC)
           $<$<CONFIG:MinSizeRel>:/MT>
       )
     else()
-        message(STATUS "Use Dynamic MSVC CRT")
+    message("------------------ Use Dynamic MSVC CRT ------------------")
         set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
         set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
         set(protobuf_MSVC_STATIC_RUNTIME OFF)
