@@ -49,17 +49,6 @@ if(MSVC)
     endif()
 endif()
 
-if(NOT BUILD_SHARED_LIBS AND MSVC AND ONNX_USE_MSVC_STATIC_RUNTIME)
-  # see https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
-  # https://stackoverflow.com/questions/14172856/compile-with-mt-instead-of-md-using-cmake
-  add_compile_options(
-          $<$<CONFIG:>:/MT> #---------|
-          $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
-          $<$<CONFIG:Release>:/MT> #--|
-          $<$<CONFIG:RelWithDebInfo>:/MT>
-          $<$<CONFIG:MinSizeRel>:/MT>
-      )
-endif()
 
 # Suppress C++23 deprecation warnings
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
