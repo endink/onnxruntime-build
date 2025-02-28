@@ -4,6 +4,7 @@
 set "ONNXRUNTIME_VERSION=1.17.3"
 
 set "DML_DIR=F:/Works/DirectML_1.15.4"
+set "WIN_SDK_VERSION=10.0.22621.0"
 
 pushd %~dp0
 set SCRIPT_DIR=%cd%

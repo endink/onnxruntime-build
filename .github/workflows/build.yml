@@ -30,6 +30,7 @@ env:
   XCODE_VERSION: 14.2
   MACOSX_DEPLOYMENT_TARGET: 10.15
   BUILD_TARGET: ${{ inputs.target || 'all' }}
+  WIN_SDK_VERSION: 10.0.22621.0
 
 defaults:
   run:
@@ -89,14 +90,14 @@ jobs:
           - target: win-x64-dml-static-md
             runs-on: windows-2019
             build: >
-              CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=OFF -DUSE_DML=ON '
+              CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=OFF -DUSE_DML=ON -DCMAKE_SYSTEM_VERSION=${WIN_SDK_VERSION} '
               ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
           - target: win-x64-dml-static-mt
             runs-on: windows-2019
             build: >
-              CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=ON -DUSE_DML=ON '
+              CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=ON -DUSE_DML=ON -DCMAKE_SYSTEM_VERSION=${WIN_SDK_VERSION} '
               ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
