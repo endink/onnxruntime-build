@@ -14,21 +14,22 @@ option(USE_DML "Use DirectML" OFF)
 set(onnxruntime_BUILD_UNIT_TESTS OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
 
-if(USE_DML And MSVC)
-    #SEE https://github.com/microsoft/onnxruntime/blob/main/cmake/external/dml.cmake    
-    set(onnxruntime_USE_DML ON)
-    # if DML_DIR defined, use local DML, else use Nuget package
-    if(DEFINED DML_DIR)
-        set(onnxruntime_USE_CUSTOM_DIRECTML ON)
-        set(dml_LIB_DIR ${DML_DIR}/bin/x64-win)
-        set(dml_INCLUDE_DIR ${DML_DIR}/include)
-        message(STATUS "onnxruntime_USE_CUSTOM_DIRECTML: ${onnxruntime_USE_CUSTOM_DIRECTML}")
-        message(STATUS "dml_LIB_DIR: ${dml_LIB_DIR}")
-        message(STATUS "dml_INCLUDE_DIR: ${dml_INCLUDE_DIR}")
-    endif()
-endif()
-
 if(MSVC)
+
+    if(USE_DML)
+        #SEE https://github.com/microsoft/onnxruntime/blob/main/cmake/external/dml.cmake    
+        set(onnxruntime_USE_DML ON)
+        # if DML_DIR defined, use local DML, else use Nuget package
+        if(DEFINED DML_DIR)
+            set(onnxruntime_USE_CUSTOM_DIRECTML ON)
+            set(dml_LIB_DIR ${DML_DIR}/bin/x64-win)
+            set(dml_INCLUDE_DIR ${DML_DIR}/include)
+            message(STATUS "onnxruntime_USE_CUSTOM_DIRECTML: ${onnxruntime_USE_CUSTOM_DIRECTML}")
+            message(STATUS "dml_LIB_DIR: ${dml_LIB_DIR}")
+            message(STATUS "dml_INCLUDE_DIR: ${dml_INCLUDE_DIR}")
+        endif()
+    endif()
+
     if(USE_MSVC_STATIC_RUNTIME)
         message("------------------ Use Static MSVC CRT ------------------")
         # Set MSVC runtime library

@@ -123,9 +123,11 @@ jobs:
           echo ARCHIVE_NAME=onnxruntime-${{ matrix.target }}-${{ env.ONNXRUNTIME_VERSION }} >> $GITHUB_ENV
 
       - name: Checkout
+        if: ${{ env.BUILD_TARGET == 'all' || env.BUILD_TARGET == matrix.target }}
         uses: actions/checkout@v4
 
       - name: Checkout OnnxRuntime v${{ env.ONNXRUNTIME_VERSION }}
+        if: ${{ env.BUILD_TARGET == 'all' || env.BUILD_TARGET == matrix.target }}
         uses: actions/checkout@v4
         with:
           repository: microsoft/onnxruntime
