@@ -7,6 +7,17 @@ on:
         description: "ONNX Runtime version"
         type: string
         default: 1.17.3
+      target:
+        description: "Build Target"
+        default: all
+        type: choice
+        options:
+        - win-x64-static-md
+        - win-x64-static-mt
+        - win-x64-dml-static-md
+        - win-x64-dml-static-mt
+        - all
+      
   push:
     tags:
       - v*.*.*
@@ -18,6 +29,7 @@ env:
   NODE_VERSION: 20
   XCODE_VERSION: 14.2
   MACOSX_DEPLOYMENT_TARGET: 10.15
+  BUILD_TARGET: ${{ inputs.onnxruntime-version || 'all' }}
 
 defaults:
   run:
@@ -27,7 +39,6 @@ jobs:
   build:
     name: Build
     runs-on: ${{ matrix.runs-on }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -75,14 +86,14 @@ jobs:
               ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
-          - target: dml-win-x64-static-md
+          - target: win-x64-dml-static-md
             runs-on: windows-2019
             build: >
               CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=OFF -DUSE_DML=ON '
               ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
-          - target: dml-win-x64-static-mt
+          - target: win-x64-dml-static-mt
             runs-on: windows-2019
             build: >
               CMAKE_OPTIONS='-A x64 -DUSE_MSVC_STATIC_RUNTIME=ON -DUSE_DML=ON '
@@ -177,12 +188,15 @@ jobs:
           xcode-version: ${{ env.XCODE_VERSION }}
 
       - name: Build
+        if: ${{ env.BUILD_TARGET == 'all' || env.BUILD_TARGET == matrix.target }}
         run: ${{ matrix.build }}
 
       - name: Post build
+        if: ${{ env.BUILD_TARGET == 'all' || env.BUILD_TARGET == matrix.target }}
         run: ${{ matrix.post-build }}
 
       - name: Upload artifact
+        if: ${{ env.BUILD_TARGET == 'all' || env.BUILD_TARGET == matrix.target }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARCHIVE_NAME }}
