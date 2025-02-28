@@ -29,7 +29,7 @@ env:
   NODE_VERSION: 20
   XCODE_VERSION: 14.2
   MACOSX_DEPLOYMENT_TARGET: 10.15
-  BUILD_TARGET: ${{ inputs.onnxruntime-version || 'all' }}
+  BUILD_TARGET: ${{ inputs.target || 'all' }}
 
 defaults:
   run:
