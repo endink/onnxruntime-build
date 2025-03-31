@@ -16,15 +16,15 @@ nuget restore -SolutionDirectory . || exit
 set "USE_CUDA=ON"
 set "USE_DML=ON"
 
-set "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4"
-set "CUDNN_HOME=E:\DevProgrames\cudnn-windows-x86_64-9.8.0.87_cuda12-archive"
+set "CUDA_HOME=C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.4"
+set "CUDNN_HOME=E:/DevProgrames/cudnn-windows-x86_64-9.8.0.87_cuda12-archive"
 SET "CUDA_VERSION=12.4"
 
 @rem cmake env
 set "OUTPUT_DIR=%SCRIPT_DIR%/output"
 set "ARCHIVE_DIR=%OUTPUT_DIR%/archive"
 set "ARCHIVE_NAME=onnxruntime-win64-%ONNXRUNTIME_VERSION%"
-set "DML_DIR=%SCRIPT_DIR%/packages/Microsoft.AI.DirectML.%DML_VERSION%/bin/x64-win"
+set "DML_DIR=%SCRIPT_DIR:\=/%/packages/Microsoft.AI.DirectML.%DML_VERSION%"
 
 set "SOURCE_DIR=%SCRIPT_DIR%/static_lib"
 set "BUILD_DIR=build/static_lib"
@@ -52,6 +52,10 @@ cmake -S %SOURCE_DIR% ^
     -D ONNXRUNTIME_SOURCE_DIR=%ONNXRUNTIME_SOURCE_DIR% ^
     -D USE_DML=%USE_DML% ^
     -D DML_DIR=%DML_DIR% ^
+    -D USE_CUDA=%USE_CUDA% ^
+    -D CUDA_VERSION=%CUDA_VERSION% ^
+    -D CUDA_HOME="%CUDA_HOME%" ^
+    -D CUDNN_HOME="%CUDNN_HOME%" ^
     --compile-no-warning-as-error ^
     %CMAKE_OPTIONS%
 
@@ -67,8 +71,12 @@ exit
 
 
 :rm_rebuild_dir
+if "%~1"=="" (
+    echo build folder is null !!
+) else (
     del /f /s /q "%~1\*.*"  >nul 2>&1
     rd /s /q  "%~1" >nul 2>&1
+)
 goto:eof
 
 :remove_space
