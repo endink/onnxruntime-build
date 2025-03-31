@@ -10,11 +10,28 @@ file(WRITE ${C_HEADER_FILE} "${MODIFIED_C_HEADER_CONTENTS}")
 
 option(USE_MSVC_STATIC_RUNTIME "Use static crt or not" OFF)
 option(USE_DML "Use DirectML" OFF)
+option(USE_CUDA "Use CUDA" OFF)
+set(CUDA_VERSION "12.4" CACHE STRING "CUDA default version")
 
 set(onnxruntime_BUILD_UNIT_TESTS OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
 
 if(MSVC)
+
+    if(USE_CUDA) 
+        
+        message(STATUS "USE_CUDA: ${USE_CUDA} (VER: ${CUDA_VERSION})")
+        message(STATUS "CUDA_HOME: ${CUDA_HOME}")
+        message(STATUS "CUDNN_HOME: ${CUDNN_HOME}")
+        set(onnxruntime_USE_CUDA ON)
+        if(DEFINED CUDA_HOME)
+            set(onnxruntime_CUDA_HOME "${CUDA_HOME}")
+        endif()
+        if(DEFINED CUDNN_HOME)
+            set(onnxruntime_CUDNN_HOME "${CUDNN_HOME}")
+        endif()
+        set(onnxruntime_CUDA_VERSION "${CUDA_VERSION}")
+    endif()
 
     if(USE_DML)
         #SEE https://github.com/microsoft/onnxruntime/blob/main/cmake/external/dml.cmake    

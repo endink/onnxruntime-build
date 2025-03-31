@@ -2,20 +2,29 @@
 
 
 set "ONNXRUNTIME_VERSION=1.17.3"
+set "DML_VERSION=1.15.4"
 
-set "DML_DIR=F:/Works/DirectML_1.15.4"
+
 set "WIN_SDK_VERSION=10.0.22621.0"
 
 pushd %~dp0
 set SCRIPT_DIR=%cd%
 echo Work Dir: %SCRIPT_DIR%
 
-@rem cmake env
+nuget restore -SolutionDirectory . || exit
 
+set "USE_CUDA=ON"
 set "USE_DML=ON"
+
+set "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4"
+set "CUDNN_HOME=E:\DevProgrames\cudnn-windows-x86_64-9.8.0.87_cuda12-archive"
+SET "CUDA_VERSION=12.4"
+
+@rem cmake env
 set "OUTPUT_DIR=%SCRIPT_DIR%/output"
 set "ARCHIVE_DIR=%OUTPUT_DIR%/archive"
 set "ARCHIVE_NAME=onnxruntime-win64-%ONNXRUNTIME_VERSION%"
+set "DML_DIR=%SCRIPT_DIR%/packages/Microsoft.AI.DirectML.%DML_VERSION%/bin/x64-win"
 
 set "SOURCE_DIR=%SCRIPT_DIR%/static_lib"
 set "BUILD_DIR=build/static_lib"
