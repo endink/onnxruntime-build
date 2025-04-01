@@ -16,9 +16,9 @@ nuget restore -SolutionDirectory . || exit
 set "USE_CUDA=ON"
 set "USE_DML=ON"
 
-set "CUDA_HOME=C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.4"
+set "CUDA_HOME=C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6"
 set "CUDNN_HOME=E:/DevProgrames/cudnn-windows-x86_64-9.8.0.87_cuda12-archive"
-SET "CUDA_VERSION=12.4"
+SET "CUDA_VERSION=12.6"
 
 @rem cmake env
 set "OUTPUT_DIR=%SCRIPT_DIR%/output"
@@ -34,7 +34,7 @@ set "CMAKE_BUILD_OPTIONS="
 
 @rem set "CMAKE_OPTIONS=-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>DLL -DONNX_USE_MSVC_STATIC_RUNTIME=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -Dgtest_force_shared_crt=ON -Donnxruntime_BUILD_UNIT_TESTS=OFF "
 
-set "CMAKE_OPTIONS=-DUSE_MSVC_STATIC_RUNTIME=ON "
+set "CMAKE_OPTIONS=-DUSE_MSVC_STATIC_RUNTIME=OFF "
 
 if not exist "%SCRIPT_DIR%/onnxruntime" (
     echo Clone onnxruntime ...

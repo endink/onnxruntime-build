@@ -17,22 +17,6 @@ set(onnxruntime_BUILD_UNIT_TESTS OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
 
 if(MSVC)
-
-    if(USE_CUDA) 
-        
-        message(STATUS "USE_CUDA: ${USE_CUDA} (VER: ${CUDA_VERSION})")
-        message(STATUS "CUDA_HOME: ${CUDA_HOME}")
-        message(STATUS "CUDNN_HOME: ${CUDNN_HOME}")
-        set(onnxruntime_USE_CUDA ON)
-        if(DEFINED CUDA_HOME)
-            set(onnxruntime_CUDA_HOME "${CUDA_HOME}")
-        endif()
-        if(DEFINED CUDNN_HOME)
-            set(onnxruntime_CUDNN_HOME "${CUDNN_HOME}")
-        endif()
-        set(onnxruntime_CUDA_VERSION "${CUDA_VERSION}")
-    endif()
-
     if(USE_DML)
         #SEE https://github.com/microsoft/onnxruntime/blob/main/cmake/external/dml.cmake    
         set(onnxruntime_USE_DML ON)
@@ -56,13 +40,6 @@ if(MSVC)
         set(ABSL_MSVC_STATIC_RUNTIME ON)
         set(gtest_force_shared_crt OFF)
 
-        add_compile_options(
-          $<$<CONFIG:>:/MT> #---------|
-          $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
-          $<$<CONFIG:Release>:/MT> #--|
-          $<$<CONFIG:RelWithDebInfo>:/MT>
-          $<$<CONFIG:MinSizeRel>:/MT>
-        )
     else()
     message("------------------ Use Dynamic MSVC CRT ------------------")
         set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
@@ -70,15 +47,22 @@ if(MSVC)
         set(protobuf_MSVC_STATIC_RUNTIME OFF)
         set(ABSL_MSVC_STATIC_RUNTIME OFF)
         set(gtest_force_shared_crt ON)
-
-        add_compile_options(
-          $<$<CONFIG:>:/MD> #---------|
-          $<$<CONFIG:Debug>:/MDd> #---|-- Statically link the runtime libraries
-          $<$<CONFIG:Release>:/MD> #--|
-          $<$<CONFIG:RelWithDebInfo>:/MD>
-          $<$<CONFIG:MinSizeRel>:/MD>
-        )
     endif()
+endif()
+
+if(USE_CUDA)
+    set(onnxruntime_USE_CUDA ON)
+    if(DEFINED CUDA_HOME)
+        set(onnxruntime_CUDA_HOME "${CUDA_HOME}")
+    endif()
+    if(DEFINED CUDNN_HOME)
+        set(onnxruntime_CUDNN_HOME "${CUDNN_HOME}")
+    endif()
+    set(onnxruntime_CUDA_VERSION "${CUDA_VERSION}")
+    
+    message(STATUS "USE_CUDA: ${onnxruntime_USE_CUDA} (VER: ${onnxruntime_CUDA_VERSION})")
+    message(STATUS "CUDA_HOME: ${onnxruntime_CUDA_HOME}")
+    message(STATUS "CUDNN_HOME: ${onnxruntime_CUDNN_HOME}")
 endif()
 
 
