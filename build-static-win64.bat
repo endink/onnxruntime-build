@@ -1,7 +1,7 @@
 @echo off
 
 
-set "ONNXRUNTIME_VERSION=1.17.3"
+set "ONNXRUNTIME_VERSION=1.21.0"
 set "DML_VERSION=1.15.4"
 
 
@@ -34,7 +34,7 @@ set "CMAKE_BUILD_OPTIONS="
 
 @rem set "CMAKE_OPTIONS=-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>DLL -DONNX_USE_MSVC_STATIC_RUNTIME=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -Dgtest_force_shared_crt=ON -Donnxruntime_BUILD_UNIT_TESTS=OFF "
 
-set "CMAKE_OPTIONS=-DUSE_MSVC_STATIC_RUNTIME=OFF "
+set "CMAKE_OPTIONS=-DUSE_MSVC_STATIC_RUNTIME=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF "
 
 if not exist "%SCRIPT_DIR%/onnxruntime" (
     echo Clone onnxruntime ...
@@ -58,6 +58,8 @@ cmake -S %SOURCE_DIR% ^
     -D CUDNN_HOME="%CUDNN_HOME%" ^
     --compile-no-warning-as-error ^
     %CMAKE_OPTIONS%
+
+pause
 
 cmake --build %BUILD_DIR% ^
     --config Release ^
@@ -89,6 +91,6 @@ if "%tmp_var:~0,1%"==" " (
 :remove_right_space
 if "%tmp_var:~-1%"==" " (
     set "tmp_var=%tmp_var:~0,-1%"
-    goto remove_left_space
+    goto remove_right_space
 )
 goto:eof

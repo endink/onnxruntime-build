@@ -13,10 +13,12 @@ option(USE_DML "Use DirectML" OFF)
 option(USE_CUDA "Use CUDA" OFF)
 set(CUDA_VERSION "12.4" CACHE STRING "CUDA default version")
 
+set(protobuf_BUILD_SHARED_LIBS OFF)
 set(onnxruntime_BUILD_UNIT_TESTS OFF)
 set(onnxruntime_BUILD_SHARED_LIB ON)
 
 if(MSVC)
+    add_compile_options(/wd4244 /wd4267 /wd4996)
     if(USE_DML)
         #SEE https://github.com/microsoft/onnxruntime/blob/main/cmake/external/dml.cmake    
         set(onnxruntime_USE_DML ON)
@@ -34,19 +36,34 @@ if(MSVC)
     if(USE_MSVC_STATIC_RUNTIME)
         message("------------------ Use Static MSVC CRT ------------------")
         # Set MSVC runtime library
-        set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>)
+
         set(ONNX_USE_MSVC_STATIC_RUNTIME ON)
         set(protobuf_MSVC_STATIC_RUNTIME ON)
         set(ABSL_MSVC_STATIC_RUNTIME ON)
         set(gtest_force_shared_crt OFF)
 
+        #fix protobuf compile
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
     else()
     message("------------------ Use Dynamic MSVC CRT ------------------")
-        set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>DLL)
+
         set(ONNX_USE_MSVC_STATIC_RUNTIME OFF)
         set(protobuf_MSVC_STATIC_RUNTIME OFF)
         set(ABSL_MSVC_STATIC_RUNTIME OFF)
         set(gtest_force_shared_crt ON)
+
+        #fix protobuf compile
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
+
+
     endif()
 endif()
 
@@ -70,7 +87,11 @@ endif()
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
 
 # Add ONNX Runtime
-add_subdirectory(${ONNXRUNTIME_SOURCE_DIR}/cmake onnxruntime EXCLUDE_FROM_ALL)
+if(USE_CUDA)
+    add_subdirectory(${ONNXRUNTIME_SOURCE_DIR}/cmake onnxruntime)
+else()
+    add_subdirectory(${ONNXRUNTIME_SOURCE_DIR}/cmake onnxruntime EXCLUDE_FROM_ALL)
+endif()
 
 # Bundle the static library
 include(bundle_static_library.cmake)
